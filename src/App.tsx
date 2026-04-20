@@ -54,14 +54,21 @@ function App() {
   }, [setByopKey]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setLoading(false));
-      } else {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+      } finally {
         setLoading(false);
       }
-    });
+    };
+
+    initializeAuth();
 
     // Fallback: Detectar modo de recuperação via URL caso o evento demore a chegar
     const hash = window.location.hash;

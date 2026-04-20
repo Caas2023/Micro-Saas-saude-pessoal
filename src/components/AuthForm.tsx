@@ -17,6 +17,13 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  
+  // Se o componente for remontado em modo reset, garantimos que a mensagem de envio de e-mail suma
+  React.useEffect(() => {
+    if (mode === 'reset') {
+      setIsEmailSent(false);
+    }
+  }, [mode]);
 
   // Detectar se estamos em modo de recuperação via prop ou evento externo
   // (O App.tsx passará o estado de reset se detectar o evento PASSWORD_RECOVERY)

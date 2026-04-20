@@ -63,6 +63,12 @@ function App() {
       }
     });
 
+    // Fallback: Detectar modo de recuperação via URL caso o evento demore a chegar
+    const hash = window.location.hash;
+    if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
+      setIsResettingPassword(true);
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth Event:", event);
       setUser(session?.user ?? null);

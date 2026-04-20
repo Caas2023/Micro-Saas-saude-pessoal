@@ -7,5 +7,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('CRITICAL: Missing Supabase configuration API keys. Vercel environment variables needed.');
 }
 
-// Inicializar mesmo se vazio (o Supabase jogará erro nas requisições, mas não travará o carregamento do React)
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// Inicializar mesmo se variáveis não estiverem setadas na Vercel (fallback para não dar Tela Preta por crash de módulo síncrono)
+export const supabase = createClient(
+  supabaseUrl || 'https://dummy.supabase.co', 
+  supabaseAnonKey || 'dummy_anon_key'
+);

@@ -157,7 +157,10 @@ function App() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <AuthForm initialMode={isResettingPassword ? 'reset' : 'login'} />
+        <AuthForm 
+          initialMode={isResettingPassword ? 'reset' : 'login'} 
+          onSuccess={() => setIsResettingPassword(false)}
+        />
       </motion.div>
     );
   }

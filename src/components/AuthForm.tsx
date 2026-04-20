@@ -8,9 +8,10 @@ import { Card, CardContent } from './ui/card';
 
 interface AuthFormProps {
   initialMode?: 'login' | 'signup' | 'forgot' | 'reset';
+  onSuccess?: () => void;
 }
 
-export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
+export function AuthForm({ initialMode = 'login', onSuccess }: AuthFormProps) {
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'reset'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,7 +54,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
         const { error } = await supabase.auth.updateUser({ password: newPassword });
         if (error) throw error;
         toast.success('Senha atualizada com sucesso! Você já está logado.');
-        // O Supabase já loga o usuário após o reset
+        onSuccess?.();
       }
     } catch (error: any) {
       toast.error(error.message || 'Ocorreu um erro');

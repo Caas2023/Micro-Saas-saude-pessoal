@@ -38,6 +38,7 @@ function App() {
   const [extractedData, setExtractedData] = useState<ExamMarker[]>([]);
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   const { getExams, saveExamMutation } = useExams(user?.id || "");
 
@@ -62,8 +63,20 @@ function App() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth Event:", event);
       setUser(session?.user ?? null);
+      
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsResettingPassword(true);
+      } else if (event === 'SIGNED_IN') {
+        // Se já estávamos resetando e o evento foi SIGNED_IN (após reset com sucesso), limpamos o estado
+        // Mas o resetPassword for email não dispara SIGNED_IN automaticamente da mesma forma.
+        // Vamos manter o isResettingPassword até que o usuário execute a ação no AuthForm.
+      } else if (event === 'SIGNED_OUT') {
+        setIsResettingPassword(false);
+      }
+
       if (session?.user) {
         fetchProfile(session.user.id);
       }
@@ -131,14 +144,14 @@ function App() {
     );
   }
 
-  if (!user) {
+  if (!user || isResettingPassword) {
     return (
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <AuthForm />
+        <AuthForm initialMode={isResettingPassword ? 'reset' : 'login'} />
       </motion.div>
     );
   }

@@ -367,6 +367,23 @@ function App() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Pollinations.ai Branding */}
+      <footer className="w-full py-8 mt-auto border-t border-white/5 flex items-center justify-center">
+        <a 
+          href="https://pollinations.ai" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="opacity-50 hover:opacity-100 transition-opacity duration-300 flex items-center gap-2"
+        >
+          <span className="text-xs text-muted-foreground font-medium tracking-wide">BUILT WITH</span>
+          <img 
+            src="https://pollinations.ai/pollinations_logo_text_white.png" 
+            alt="pollinations.ai" 
+            className="h-4"
+          />
+        </a>
+      </footer>
     </div>
   );
 }

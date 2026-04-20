@@ -18,9 +18,20 @@ O **Saúde Pessoal** é uma plataforma premium de monitoramento evolutivo de sa�
 
 ## 🐝 Integração Pollinations & BYOP
 
+<p align="center">
+  <a href="https://pollinations.ai">
+    <img src="https://pollinations.ai/pollinations_logo_text_white.png" alt="Pollinations.ai Logo" width="200" />
+  </a>
+</p>
+<p align="center">
+  <a href="https://pollinations.ai">
+    <img src="https://img.shields.io/badge/Built%20With-pollinations.ai-black?style=for-the-badge&logoUrl=https%3A%2F%2Fpollinations.ai%2Ffavicon.ico" alt="Built With pollinations.ai" />
+  </a>
+</p>
+
 O Saúde Pessoal nasceu com a filosofia de **Soberania de Dados e IA**. Através do sistema **BYOP (Bring Your Own Provider)**, você pode:
 
-1.  **Pollinations AI**: Conectar sua conta Pollinations via OAuth para utilizar créditos descentralizados e modelos alternativos.
+1.  **Pollinations AI**: Conectar sua conta [Pollinations.ai](https://pollinations.ai) via OAuth para utilizar créditos descentralizados e modelos alternativos.
 2.  **Multi-Provider**: Configurar chaves privadas da **OpenAI**, **Anthropic** ou sua própria chave **Gemini** diretamente nas configurações do painel.
 3.  **Privacidade Local**: Suas chaves BYOP são armazenadas apenas no seu navegador (`localStorage`), garantindo que nem mesmo os administradores do sistema tenham acesso a elas.
 

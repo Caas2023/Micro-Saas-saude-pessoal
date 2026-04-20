@@ -16,6 +16,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
   // Detectar se estamos em modo de recuperação via prop ou evento externo
   // (O App.tsx passará o estado de reset se detectar o evento PASSWORD_RECOVERY)
@@ -39,8 +40,8 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
           redirectTo: window.location.origin,
         });
         if (error) throw error;
-        toast.success('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
-        setMode('login');
+        setIsEmailSent(true);
+        toast.success('E-mail de recuperação enviado!');
       } else if (mode === 'reset') {
         const { error } = await supabase.auth.updateUser({ password: newPassword });
         if (error) throw error;
@@ -94,7 +95,7 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                 className="space-y-6"
               >
                 <div className="space-y-4">
-                  {mode !== 'reset' && (
+                  {mode !== 'reset' && !isEmailSent && (
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-muted-foreground ml-1">Email</label>
                       <div className="relative group">
@@ -111,6 +112,22 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                     </div>
                   )}
 
+                  {isEmailSent && mode === 'forgot' && (
+                    <div className="p-6 rounded-2xl bg-primary/10 border border-primary/20 text-center space-y-3">
+                      <div className="inline-flex p-2 rounded-full bg-primary/20">
+                        <Mail className="w-6 h-6 text-primary" />
+                      </div>
+                      <h3 className="font-bold text-lg">E-mail Enviado!</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Enviamos instruções de recuperação para <br/>
+                        <span className="text-foreground font-medium">{email}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground/70 italic">
+                        Não esqueça de checar a pasta de Spam.
+                      </p>
+                    </div>
+                  )}
+
                   {mode !== 'forgot' && mode !== 'reset' && (
                     <div className="space-y-2">
                       <div className="flex justify-between items-center px-1">
@@ -118,7 +135,10 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                         {mode === 'login' && (
                           <button 
                             type="button"
-                            onClick={() => setMode('forgot')}
+                            onClick={() => {
+                              setMode('forgot');
+                              setIsEmailSent(false);
+                            }}
                             className="text-xs text-primary/70 hover:text-primary transition-colors"
                           >
                             Esqueci minha senha
@@ -157,24 +177,26 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
                   )}
                 </div>
 
-                <Button 
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-14 rounded-xl text-lg font-semibold gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                >
-                  {loading ? (
-                    <Activity className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      {mode === 'login' ? 'Entrar Agora' : 
-                       mode === 'signup' ? 'Criar Conta' : 
-                       mode === 'forgot' ? 'Enviar E-mail' : 'Atualizar Senha'}
-                      <ArrowRight className="w-5 h-5" />
-                    </>
-                  )}
-                </Button>
+                {!isEmailSent && (
+                  <Button 
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-14 rounded-xl text-lg font-semibold gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    {loading ? (
+                      <Activity className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        {mode === 'login' ? 'Entrar Agora' : 
+                         mode === 'signup' ? 'Criar Conta' : 
+                         mode === 'forgot' ? 'Enviar E-mail' : 'Atualizar Senha'}
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </Button>
+                )}
 
-                {mode !== 'reset' && (
+                {mode !== 'reset' && !isEmailSent && (
                   <>
                     <div className="relative py-4">
                       <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5" /></div>
@@ -194,7 +216,10 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
               {mode === 'login' && (
                 <button
                   type="button"
-                  onClick={() => setMode('signup')}
+                  onClick={() => {
+                    setMode('signup');
+                    setIsEmailSent(false);
+                  }}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Não tem uma conta? Cadastre-se
@@ -203,16 +228,22 @@ export function AuthForm({ initialMode = 'login' }: AuthFormProps) {
               {mode === 'signup' && (
                 <button
                   type="button"
-                  onClick={() => setMode('login')}
+                  onClick={() => {
+                    setMode('login');
+                    setIsEmailSent(false);
+                  }}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Já possui conta? Faça o login
                 </button>
               )}
-              {mode === 'forgot' && (
+              {(mode === 'forgot' || isEmailSent) && (
                 <button
                   type="button"
-                  onClick={() => setMode('login')}
+                  onClick={() => {
+                    setMode('login');
+                    setIsEmailSent(false);
+                  }}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors underline decoration-primary/30"
                 >
                   Voltar para o login

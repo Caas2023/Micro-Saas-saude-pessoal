@@ -180,11 +180,13 @@ function App() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('dashboard')}>
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Activity className="w-5 h-5 text-background" />
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView('dashboard')}>
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center animate-float shadow-[0_0_20px_oklch(75%_0.15_160_/_30%)]">
+              <Activity className="w-6 h-6 text-background" />
             </div>
-            <span className="font-bold text-xl tracking-tight hidden sm:inline-block">Saúde Pessoal v1.1</span>
+            <span className="font-bold text-2xl tracking-tighter hidden sm:inline-block bg-gradient-to-br from-white to-white/40 bg-clip-text text-transparent">
+              Saúde Pessoal
+            </span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -205,10 +207,11 @@ function App() {
           {view === 'dashboard' && (
             <motion.div 
               key="dashboard"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
+              initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="space-y-10"
             >
               <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div>
@@ -222,10 +225,10 @@ function App() {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Historical List */}
-                <Card className="lg:col-span-2 glass border-white/5">
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <History className="w-5 h-5 text-primary" /> Últimas Análises
+                <Card className="lg:col-span-2 glass-card overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 bg-white/[0.02]">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                      <History className="w-5 h-5 text-primary" /> Histórico de Análises
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-0">
@@ -306,12 +309,20 @@ function App() {
                       maxRef={getExams.data[0]?.exam_results?.find((r: any) => r.marker_name === selectedMarker)?.reference_max}
                     />
                   ) : (
-                    <Card className="glass border-white/5 border-dashed bg-transparent h-[400px] flex items-center justify-center text-center p-8">
-                      <p className="text-muted-foreground text-sm">Selecione um marcador na lista para ver seu histórico evolutivo.</p>
+                    <Card className="glass-card border-dashed bg-transparent h-[400px] flex items-center justify-center text-center p-8">
+                      <div className="space-y-4 max-w-[200px]">
+                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto">
+                           <TrendingUp className="w-6 h-6 opacity-20" />
+                        </div>
+                        <p className="text-muted-foreground text-xs leading-relaxed">
+                          Selecione um marcador na lista para visualizar o gráfico evolutivo.
+                        </p>
+                      </div>
                     </Card>
                   )}
 
-                  <Card className="glass bg-primary/5 border-primary/20">
+                  <Card className="glass-card bg-primary/5 border-primary/20 overflow-hidden relative group">
+                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                      <CardHeader>
                         <CardTitle className="text-sm">Status de Saúde</CardTitle>
                      </CardHeader>

@@ -116,10 +116,12 @@ CREATE TABLE public.app_secrets (
 
 ALTER TABLE public.app_secrets ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Authenticated users can read secrets"
+CREATE POLICY "Only admins can read secrets"
 ON public.app_secrets FOR SELECT
 TO authenticated
-USING (true);
+USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = TRUE)
+);
 
 CREATE POLICY "Admins can insert secrets"
 ON public.app_secrets FOR INSERT

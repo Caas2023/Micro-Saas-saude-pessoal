@@ -120,9 +120,10 @@ function App() {
       setExtractedData(data.results);
       setView('review');
       toast.success("Foto salva e dados extraídos com sucesso!");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Erro ao processar exame. Verifique sua chave de API e conexão.");
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao processar exame.";
+      toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
     }

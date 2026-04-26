@@ -42,7 +42,14 @@
 }
 
 .glass-card {
-  @apply glass hover:border-primary/30 transition-all duration-500 ease-out;
+  background: oklch(100% 0 0 / 3%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid oklch(100% 0 0 / 8%);
+  box-shadow: 0 8px 32px 0 oklch(0% 0 0 / 40%);
+  transition: all 500ms ease-out;
+}
+.glass-card:hover {
+  border-color: oklch(75% 0.15 160 / 30%);
 }
 
 /* Animations */

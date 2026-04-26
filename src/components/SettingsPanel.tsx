@@ -63,15 +63,15 @@ export const SettingsPanel: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger 
-        asChild
-      >
-        <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full">
-          <SettingsIcon className="w-5 h-5 text-muted-foreground" />
-          {isOffline && (
-            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-background" />
-          )}
-        </Button>
-      </DialogTrigger>
+        render={
+          <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full">
+            <SettingsIcon className="w-5 h-5 text-muted-foreground" />
+            {isOffline && (
+              <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-background" />
+            )}
+          </Button>
+        }
+      />
       <DialogContent className="glass border-white/10 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

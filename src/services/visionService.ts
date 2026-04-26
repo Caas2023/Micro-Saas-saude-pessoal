@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType, ResponseSchema } from "@google/generative-ai";
 import axios from "axios";
 import type { OCRResult } from "../types/exam";
 
@@ -8,7 +8,7 @@ Extraia o nome do marcador, o valor numérico, a unidade de medida e os limites 
 Se um valor de referência for apenas "Menor que X", defina reference_min como 0 e reference_max como X.
 Não faça inferências clínicas, apenas transcreva os números com exatidão.`;
 
-const RESPONSE_SCHEMA = {
+const RESPONSE_SCHEMA: ResponseSchema = {
   type: SchemaType.OBJECT,
   properties: {
     results: {

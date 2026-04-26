@@ -119,6 +119,17 @@ export const visionService = {
 
       return finalResult;
     } catch (error: any) {
+      // Fallback automático: se o Gemini falhou, tentar via Pollinations
+      if (provider === 'gemini') {
+        console.warn("Gemini falhou, tentando fallback via Pollinations...", error.message);
+        try {
+          return await this.extractExamData(imageFile, 'pollinations');
+        } catch (fallbackError: any) {
+          console.error("Fallback Pollinations também falhou:", fallbackError.message);
+          throw new Error(`Gemini: ${error.message}. Fallback Pollinations também falhou.`);
+        }
+      }
+
       // Extrair mensagem de erro amigável
       let errorMsg = error.message;
       if (error.response?.data?.error?.message) {

@@ -7,6 +7,10 @@ CREATE TABLE public.profiles (
     full_name TEXT,
     avatar_url TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
+    gemini_key TEXT,
+    openai_key TEXT,
+    anthropic_key TEXT,
+    pollinations_key TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 

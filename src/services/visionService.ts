@@ -57,7 +57,7 @@ export const visionService = {
         
         // Usando 1.5-flash como padrão por ser mais estável e suportado globalmente
         const model = genAI.getGenerativeModel({ 
-          model: "gemini-1.5-flash",
+          model: "gemini-2.0-flash",
           generationConfig: {
             responseMimeType: "application/json",
             responseSchema: RESPONSE_SCHEMA,

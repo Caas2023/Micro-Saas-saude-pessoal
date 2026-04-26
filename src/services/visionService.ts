@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI, SchemaType, ResponseSchema } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import type { ResponseSchema } from "@google/generative-ai";
 import axios from "axios";
 import type { OCRResult } from "../types/exam";
 

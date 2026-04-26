@@ -80,8 +80,8 @@ export const visionService = {
         finalResult = JSON.parse(text) as OCRResult;
 
       } else if (provider === 'pollinations') {
-        // Pollinations usa interface compatível com OpenAI
-        const response = await axios.post('https://text.pollinations.ai/', {
+        // Pollinations usa interface compatível com OpenAI V1 para visão
+        const response = await axios.post('https://gen.pollinations.ai/v1/chat/completions', {
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             { 

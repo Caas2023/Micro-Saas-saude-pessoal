@@ -32,10 +32,11 @@ const RESPONSE_SCHEMA = {
 export const visionService = {
   async extractExamData(imageFile: File, provider: string = 'gemini', apiKey?: string | null): Promise<OCRResult> {
     try {
-      // 1. Converter arquivo para base64 (comum para ambos os provedores)
+      // 1. Converter arquivo para base64
       const reader = new FileReader();
-      const base64Promise = new Promise<string>((resolve) => {
+      const base64Promise = new Promise<string>((resolve, reject) => {
         reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Falha ao ler arquivo de imagem."));
         reader.readAsDataURL(imageFile);
       });
       const base64String = await base64Promise;
@@ -45,12 +46,17 @@ export const visionService = {
       let finalResult: OCRResult;
 
       if (provider === 'gemini') {
-        const currentApiKey = apiKey || import.meta.env.VITE_GEMINI_API_KEY || "";
+        const currentApiKey = apiKey || import.meta.env.VITE_GEMINI_API_KEY;
+        
+        if (!currentApiKey || currentApiKey.length < 10) {
+          throw new Error("Chave de API do Gemini não configurada ou inválida. Vá em Configurações.");
+        }
+
         const genAI = new GoogleGenerativeAI(currentApiKey);
         
-        // Gemini 2.0 Flash é mais rápido e preciso para OCR estruturado
+        // Usando 1.5-flash como padrão por ser mais estável e suportado globalmente
         const model = genAI.getGenerativeModel({ 
-          model: "gemini-2.0-flash",
+          model: "gemini-1.5-flash",
           generationConfig: {
             responseMimeType: "application/json",
             responseSchema: RESPONSE_SCHEMA,
@@ -68,7 +74,10 @@ export const visionService = {
         ]);
 
         const response = await result.response;
-        finalResult = JSON.parse(response.text()) as OCRResult;
+        const text = response.text();
+        
+        if (!text) throw new Error("A IA retornou uma resposta vazia.");
+        finalResult = JSON.parse(text) as OCRResult;
 
       } else if (provider === 'pollinations') {
         // Pollinations usa interface compatível com OpenAI
@@ -78,28 +87,47 @@ export const visionService = {
             { 
               role: 'user', 
               content: [
-                { type: 'text', text: "Extraia os dados deste exame laboratoriais em formato JSON estrito." },
+                { type: 'text', text: "Extraia os dados deste exame laboratoriais em formato JSON estrito conforme o esquema." },
                 { type: 'image_url', image_url: { url: dataUri } }
               ] 
             }
           ],
-          model: 'openai', // Pollinations mapeia 'openai' para GPT-4o-mini/GPT-4o
+          model: 'openai',
           jsonMode: true,
-          seed: 42 // Para maior consistência
-        });
+          seed: 42
+        }, { timeout: 45000 }); // Timeout maior para visão
 
         const text = response.data;
-        // Limpeza básica se não vier JSON puro (embora jsonMode: true ajude)
-        const jsonMatch = typeof text === 'string' ? text.match(/\{[\s\S]*\}/) : null;
-        finalResult = jsonMatch ? JSON.parse(jsonMatch[0]) : (typeof text === 'object' ? text : JSON.parse(text));
+        if (!text) throw new Error("A Pollinations retornou uma resposta vazia.");
+        
+        // Parsing robusto
+        if (typeof text === 'object') {
+          finalResult = text as OCRResult;
+        } else {
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          finalResult = JSON.parse(jsonMatch ? jsonMatch[0] : text) as OCRResult;
+        }
       } else {
         throw new Error(`Provedor ${provider} ainda não implementado.`);
       }
 
+      // Validação básica do resultado
+      if (!finalResult.results || !Array.isArray(finalResult.results)) {
+        throw new Error("Formato de resposta inválido: 'results' não encontrado.");
+      }
+
       return finalResult;
-    } catch (error) {
-      console.error(`Erro no OCR (${provider}):`, error);
-      throw error;
+    } catch (error: any) {
+      // Extrair mensagem de erro amigável
+      let errorMsg = error.message;
+      if (error.response?.data?.error?.message) {
+        errorMsg = error.response.data.error.message;
+      } else if (error.toString().includes("API_KEY_INVALID")) {
+        errorMsg = "Chave de API Inválida. Verifique suas configurações.";
+      }
+      
+      console.error(`Erro Crítico no OCR (${provider}):`, error);
+      throw new Error(errorMsg);
     }
   },
 };
